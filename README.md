@@ -2,6 +2,8 @@
 
 Repository personale per le esercitazioni del corso di **Tecnologie e applicazioni digitali**, Accademia di Belle Arti di Frosinone.
 
+Sito pubblico: https://federicabovi.github.io/aa2627-tad-es/
+
 Le specifiche precise, con obiettivi, vincoli e modalità di realizzazione, si trovano nella sezione [Attività](https://codestesie.it/aa2627/tad/attivita/) del sito del corso.
 
 ## Prima di iniziare
