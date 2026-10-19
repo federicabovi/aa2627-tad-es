@@ -1,59 +1,63 @@
-// Illusione: griglia in movimento / moiré di quadrati
-// Fonte: https://michaelbach.de/ot/
-// Regola (consigliata): una griglia di quadrati neri si ripete su righe e colonne; le linee bianche tra un blocco e l'altro cambiano spessore in modo sinusoidale e i quadrati si leggermente spostano in fase diversa. La variazione continua del contrasto crea un effetto percettivo di vibrazione, pulsazione e movimento della superficie.
-// Parametri critici: cellSize, initialLineWidth, lineAmplitude, animationSpeed
-//   effetto più evidente con cellSize 80, initialLineWidth 12, lineAmplitude 10, animationSpeed 0.04; nessun effetto con lineAmplitude 0 o animationSpeed 0
+/*
+Illusione: Scintillating Grid Illusion
+Fonte: https://www.greenme.it/lifestyle/test/griglia-scintillante-illusione-ottica/
+Regola: linee grigie orizzontali e verticali formano una griglia.
+Piccoli dischi bianchi sono ripetuti alle intersezioni.
+Parametri critici:
+- passoGriglia: effetto più evidente con una griglia fitta; nessun effetto se gli incroci sono troppo distanti per formare una griglia percepibile.
+- diametroPunto: effetto più evidente con punti piccoli; nessun effetto se i punti nascondono le linee della griglia.
+- spessoreLinea: effetto più evidente con linee sottili e visibili; nessun effetto se le linee sono invisibili.
+- contrastoLinee: effetto più evidente con linee chiare sul fondo nero; nessun effetto se linee e sfondo hanno lo stesso colore.
+- variazione: movimento più evidente con una variazione moderata; nessuna variazione animata se vale 0.
+- velocita: movimento più leggibile se lento; nessun movimento se vale 0.
+*/
 
-const CANVAS_W = 800;
-const CANVAS_H = 600;
+// Dimensioni della tela
+let larghezzaTela = 800;
+let altezzaTela = 600;
 
-const cellSize = 80;
-const initialLineWidth = 12;
-const lineAmplitude = 10;
-const animationSpeed = 0.04;
-const offsetStrength = 8;
+// Parametri della griglia
+let passoGriglia = 50;
+let spessoreLinea = 8;
+let diametroPunto = 12;
+let margine = 25;
+
+// Parametri dell'animazione
+let contrastoLinee = 110;
+let variazione = 25;
+let velocita = 0.035;
 
 function setup() {
-  createCanvas(CANVAS_W, CANVAS_H);
-  frameRate(30);
-  rectMode(CORNER);
+  createCanvas(larghezzaTela, altezzaTela);
   noStroke();
 }
 
 function draw() {
-  background(255);
+  background(0);
 
-  const time = frameCount * animationSpeed;
-  const lineWidth = initialLineWidth + sin(time) * lineAmplitude;
-  const shift = sin(time * 1.8) * offsetStrength;
+  // Variazione graduale dell'intensità delle linee
+  let oscillazione = sin(frameCount * velocita);
+  let grigioLinea = contrastoLinee + oscillazione * variazione;
 
-  fill(0);
-  for (let y = 0; y < height; y += cellSize) {
-    for (let x = 0; x < width; x += cellSize) {
-      const jitterX = sin((x + y) * 0.08 + time * 2.4) * 1.4;
-      const jitterY = cos((x - y) * 0.07 + time * 1.9) * 1.4;
+  // Linee verticali e orizzontali
+  stroke(grigioLinea);
+  strokeWeight(spessoreLinea);
 
-      rect(
-        x + lineWidth / 2 + jitterX + shift * 0.2,
-        y + lineWidth / 2 + jitterY + shift * 0.2,
-        cellSize - lineWidth,
-        cellSize - lineWidth
-      );
+  for (let x = margine; x <= width - margine; x += passoGriglia) {
+    line(x, margine, x, height - margine);
+  }
+
+  for (let y = margine; y <= height - margine; y += passoGriglia) {
+    line(margine, y, width - margine, y);
+  }
+
+  // Punti bianchi agli incroci
+  noStroke();
+  fill(255);
+
+  for (let x = margine; x <= width - margine; x += passoGriglia) {
+    for (let y = margine; y <= height - margine; y += passoGriglia) {
+      circle(x, y, diametroPunto);
     }
   }
-
-  stroke(255);
-  strokeWeight(lineWidth);
-
-  for (let x = -cellSize; x <= width + cellSize; x += cellSize) {
-    const driftX = sin(x * 0.08 + time) * offsetStrength;
-    line(x + driftX, 0, x + driftX, height);
-  }
-
-  for (let y = -cellSize; y <= height + cellSize; y += cellSize) {
-    const driftY = cos(y * 0.08 + time * 1.2) * offsetStrength;
-    line(0, y + driftY, width, y + driftY);
-  }
-
-  noStroke();
 }
